@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import Groq from 'groq-sdk';
 import pdfToText from 'react-pdftotext';
+import 'react-toastify/dist/ReactToastify.css';
 import { FileText, Upload, Briefcase, Loader2, CheckCircle, AlertCircle, Award, Brain, Target, Lightbulb, BookOpen, Code, MessageSquare, TargetIcon, ArrowBigUpIcon, SearchIcon, Code2, AlertTriangle } from 'lucide-react';
 import { RadialBarChart, RadialBar, PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { toast, ToastContainer } from 'react-toastify';
 
 interface AnalysisResult {
   overall_summary: string;
@@ -82,6 +84,14 @@ const App = () => {
     try {
       const resumeText = await extractTextFromPDF(resumeFile);
 
+      if (!resumeText.trim()) {
+        toast.error('Faild to Scan Resume', {
+          position: 'top-right',
+        });
+        setLoading(false);
+        return;
+      }
+
       const prompt = `
 You are an AI Resume Analyzer designed to help job seekers improve their resumes. Analyze the following resume against the provided job description and return a response in strict JSON format as per the schema below. Give detailed recommendations and insights based on the analysis.
 
@@ -141,6 +151,9 @@ ${jobDescription}
 
       const result = JSON.parse(completion.choices[0].message.content);
       setAnalysisResult(result);
+      toast.success('Analysis complete!', {
+        position: 'top-right',
+      });
     } catch (error) {
       console.error('Failed to analyze resume:', error);
       alert('Failed to analyze resume. Please try again.');
@@ -530,85 +543,88 @@ ${jobDescription}
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-5xl mx-auto">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">ATSight AI</h1>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Upload your resume and job description to get detailed analysis and personalized recommendations!
-          </p>
-        </div>
-
-        <div className="bg-white rounded-xl shadow-lg p-8 border border-gray-100">
-          <div className="space-y-8">
-            <div>
-              <div className="flex items-center gap-3 mb-4">
-                <FileText className="w-6 h-6 text-blue-600" />
-                <h2 className="text-xl font-bold text-gray-900">Upload Resume</h2>
-              </div>
-              <div className="mt-2 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-xl hover:border-blue-400 transition-colors duration-200">
-                <div className="space-y-2 text-center">
-                  <Upload className="mx-auto h-12 w-12 text-gray-400" />
-                  <div className="flex text-sm text-gray-600">
-                    <label className="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500">
-                      <span>Upload a file</span>
-                      <input
-                        type="file"
-                        accept="application/pdf"
-                        className="sr-only"
-                        onChange={handleResumeUpload}
-                      />
-                    </label>
-                    <p className="pl-1">or drag and drop</p>
-                  </div>
-                  <p className="text-xs text-gray-500">PDF up to 10MB</p>
-                </div>
-              </div>
-              {resumeFile && (
-                <div className="mt-3 text-sm text-gray-500 flex items-center gap-2">
-                  <CheckCircle className="w-4 h-4 text-green-500" />
-                  <span>Selected file: {resumeFile.name}</span>
-                </div>
-              )}
-            </div>
-
-            <div>
-              <div className="flex items-center gap-3 mb-4">
-                <Briefcase className="w-6 h-6 text-blue-600" />
-                <h2 className="text-xl font-bold text-gray-900">Job Description</h2>
-              </div>
-              <textarea
-                value={jobDescription}
-                onChange={(e) => setJobDescription(e.target.value)}
-                rows={6}
-                className="mt-2 p-2 block w-full rounded-xl border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-                placeholder="Paste the job description here..."
-              />
-            </div>
-
-            <button
-              onClick={analyzeResume}
-              disabled={loading || !resumeFile || !jobDescription}
-              className="w-full flex justify-center items-center gap-3 py-3 px-4 border border-transparent rounded-xl text-base font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors duration-200"
-            >
-              {loading ? (
-                <>
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                  Analyzing Resume
-                </>
-              ) : (
-                <>
-                  <Brain className="w-5 h-5" />
-                  Analyze Resume
-                </>
-              )}
-            </button>
+    <>
+      <ToastContainer />
+      <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center mb-12">
+            <h1 className="text-4xl font-bold text-gray-900 mb-4">ATSight AI</h1>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              Upload your resume and job description to get detailed analysis and personalized recommendations!
+            </p>
           </div>
-        </div>
 
-        {renderAnalysisResult()}
+          <div className="bg-white rounded-xl shadow-lg p-8 border border-gray-100">
+            <div className="space-y-8">
+              <div>
+                <div className="flex items-center gap-3 mb-4">
+                  <FileText className="w-6 h-6 text-blue-600" />
+                  <h2 className="text-xl font-bold text-gray-900">Upload Resume</h2>
+                </div>
+                <div className="mt-2 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-xl hover:border-blue-400 transition-colors duration-200">
+                  <div className="space-y-2 text-center">
+                    <Upload className="mx-auto h-12 w-12 text-gray-400" />
+                    <div className="flex text-sm text-gray-600">
+                      <label className="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500">
+                        <span>Upload a file</span>
+                        <input
+                          type="file"
+                          accept="application/pdf"
+                          className="sr-only"
+                          onChange={handleResumeUpload}
+                        />
+                      </label>
+                      <p className="pl-1">or drag and drop</p>
+                    </div>
+                    <p className="text-xs text-gray-500">PDF up to 10MB</p>
+                  </div>
+                </div>
+                {resumeFile && (
+                  <div className="mt-3 text-sm text-gray-500 flex items-center gap-2">
+                    <CheckCircle className="w-4 h-4 text-green-500" />
+                    <span>Selected file: {resumeFile.name}</span>
+                  </div>
+                )}
+              </div>
+
+              <div>
+                <div className="flex items-center gap-3 mb-4">
+                  <Briefcase className="w-6 h-6 text-blue-600" />
+                  <h2 className="text-xl font-bold text-gray-900">Job Description</h2>
+                </div>
+                <textarea
+                  value={jobDescription}
+                  onChange={(e) => setJobDescription(e.target.value)}
+                  rows={6}
+                  className="mt-2 p-2 block w-full rounded-xl border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                  placeholder="Paste the job description here..."
+                />
+              </div>
+
+              <button
+                onClick={analyzeResume}
+                disabled={loading || !resumeFile || !jobDescription}
+                className="w-full flex justify-center items-center gap-3 py-3 px-4 border border-transparent rounded-xl text-base font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors duration-200"
+              >
+                {loading ? (
+                  <>
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    Analyzing Resume
+                  </>
+                ) : (
+                  <>
+                    <Brain className="w-5 h-5" />
+                    Analyze Resume
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+
+          {renderAnalysisResult()}
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 
