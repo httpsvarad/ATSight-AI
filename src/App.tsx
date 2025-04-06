@@ -85,7 +85,7 @@ const App = () => {
       const resumeText = await extractTextFromPDF(resumeFile);
 
       if (!resumeText.trim()) {
-        toast.error('Faild to Scan Resume', {
+        toast.error('Failed to Scan Resume', {
           position: 'top-right',
         });
         setLoading(false);
