@@ -56,6 +56,7 @@ const App = () => {
   const [jobDescription, setJobDescription] = useState('');
   const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null);
   const [loading, setLoading] = useState(false);
+  const [pdfEx, setPdfEx] = useState('');
 
   const handleResumeUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -66,6 +67,7 @@ const App = () => {
   const extractTextFromPDF = async (file: File): Promise<string> => {
     try {
       const text = await pdfToText(file);
+      console.log('Extracted text:', text.slice(0, 100)); // Log first 100 characters for debugging
       return text;
     } catch (error) {
       console.error('Failed to extract text from PDF:', error);
@@ -83,6 +85,7 @@ const App = () => {
 
     try {
       const resumeText = await extractTextFromPDF(resumeFile);
+      setPdfEx(resumeText);
 
       if (!resumeText.trim()) {
         toast.error('Faild to Scan Resume', {
@@ -549,6 +552,7 @@ ${jobDescription}
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-12">
             <h1 className="text-4xl font-bold text-gray-900 mb-4">ATSight AI</h1>
+            <p>{pdfEx.slice(0, 100)}</p>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
               Upload your resume and job description to get detailed analysis and personalized recommendations!
             </p>
