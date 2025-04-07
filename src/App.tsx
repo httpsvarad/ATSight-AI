@@ -93,7 +93,7 @@ const App = () => {
       }
 
       const prompt = `
-You are an AI Resume Analyzer designed to help job seekers improve their resumes. Analyze the following resume against the provided job description and return a response in strict JSON format as per the schema below. Give detailed recommendations and insights based on the analysis. Calculate the Resume Score accurately strictly based on job description, Do not take resume readability into account for Resume Scoring.
+You are an AI Resume Analyzer designed to help job seekers improve their resumes. Analyze the following resume against the provided job description and return a response in strict JSON format as per the schema below. Give detailed recommendations and insights based on the analysis. Analyze the resume STRICTLY based on the job description.
 
 Respond ONLY with the JSON object.
 
