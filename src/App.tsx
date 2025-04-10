@@ -34,10 +34,6 @@ interface AnalysisResult {
     met_requirements: string[];
     missing_requirements: string[];
   };
-  experience: {
-    experience_criteria_met: string[];
-    total_years_experience: number[];
-  };
   tone_of_language: string;
   formatting_issues: string[];
   grammar_issues: string[];
@@ -126,10 +122,6 @@ Schema:
     "met_requirements": string[],
     "missing_requirements": string[]
   },
-  "experience": {
-    "experience_criteria_met": "YES" | "NO",
-    "total_years_experience": number
-  },
   "tone_of_language": "Professional" | "Casual" | "Neutral" | "Aggressive",
   "formatting_issues": string[],
   "grammar_issues": string[],
@@ -151,7 +143,7 @@ ${jobDescription}
 
       const result = JSON.parse(completion.choices[0].message.content);
       setAnalysisResult(result);
-      toast.success('Analysis complete!', {
+      toast.success('Analysis complete !', {
         position: 'top-right',
       });
     } catch (error) {
@@ -334,17 +326,6 @@ ${jobDescription}
                 ))}
               </div>
             </div>
-
-            <div className="bg-gray-50 rounded-lg p-6 border border-gray-100">
-              <div className="flex items-center gap-2 mb-3">
-                <BrainCircuit className="w-5 h-5 text-blue-600" />
-                <h3 className="font-semibold text-gray-700">Experience</h3>
-              </div>
-              <div className="text-3xl font-bold text-[#CA8A04]">
-                {analysisResult.experience.total_years_experience} Years
-              </div>
-            </div>
-
           </div>
 
           <div className="bg-blue-50 rounded-lg p-6 border border-blue-100">
