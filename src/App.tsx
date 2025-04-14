@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Groq from 'groq-sdk';
 import pdfToText from 'react-pdftotext';
 import 'react-toastify/dist/ReactToastify.css';
-import { FileText, Upload, Briefcase, Loader2, CheckCircle, AlertCircle, Award, Brain, Target, Lightbulb, BookOpen, Code, MessageSquare, TargetIcon, ArrowBigUpIcon, SearchIcon, Code2, AlertTriangle, BrainCircuit } from 'lucide-react';
+import { FileText, Upload, Briefcase, Loader2, CheckCircle, AlertCircle, Award, Brain, Target, Lightbulb, BookOpen, Code, MessageSquare, TargetIcon, ArrowBigUpIcon, SearchIcon, Code2, AlertTriangle, BrainCircuit, Gauge } from 'lucide-react';
 import { RadialBarChart, RadialBar, PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { toast, ToastContainer } from 'react-toastify';
 
@@ -38,6 +38,7 @@ interface AnalysisResult {
   formatting_issues: string[];
   grammar_issues: string[];
   recommendations: string[];
+  shortlisting_chances: number;
 }
 
 const groq = new Groq({
@@ -125,7 +126,8 @@ Schema:
   "tone_of_language": "Professional" | "Casual" | "Neutral" | "Aggressive",
   "formatting_issues": string[],
   "grammar_issues": string[],
-  "recommendations": string[]
+  "recommendations": string[],
+  "shortlisting_chances": number (0 to 100)
 }
 
 Resume:
@@ -133,6 +135,10 @@ ${resumeText}
 
 Job Description:
 ${jobDescription}
+
+Note:
+- If the job description lists a requirement using "such as", "like", or "e.g." with multiple alternative tools/skills (e.g. "React, Angular, or Vue.js"), treat the requirement as satisfied if the resume includes ANY ONE of the listed options.
+- Do not list the other alternatives as “missing” unless the job description explicitly requires them ALL.
 `;
 
       const completion = await groq.chat.completions.create({
@@ -143,7 +149,7 @@ ${jobDescription}
 
       const result = JSON.parse(completion.choices[0].message.content);
       setAnalysisResult(result);
-      toast.success('Analysis complete !', {
+      toast.success('Analysis complete!', {
         position: 'top-right',
       });
     } catch (error) {
@@ -306,10 +312,20 @@ ${jobDescription}
             <div className="bg-gray-50 rounded-lg p-6 border border-gray-100">
               <div className="flex items-center gap-2 mb-3">
                 <Code2 className="w-5 h-5 text-blue-600" />
-                <h3 className="font-semibold text-gray-700">Skills Match</h3>
+                <h3 className="font-semibold text-gray-700">Skill Match</h3>
               </div>
               <div className={`text-3xl font-bold ${getScoreColor(analysisResult.skills_match.match_percentage)}`}>
                 {analysisResult.skills_match.match_percentage}%
+              </div>
+            </div>
+
+            <div className="bg-gray-50 rounded-lg p-6 border border-gray-100">
+              <div className="flex items-center gap-2 mb-3">
+                <Gauge className="w-5 h-5 text-blue-600" />
+                <h3 className="font-semibold text-gray-700">Hiring Potential</h3>
+              </div>
+              <div className={`text-3xl font-bold ${getScoreColor(analysisResult.shortlisting_chances)}`}>
+                {analysisResult.shortlisting_chances}/100
               </div>
             </div>
 
