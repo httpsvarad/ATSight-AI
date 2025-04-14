@@ -139,6 +139,7 @@ ${jobDescription}
 Note:
 - If the job description lists a requirement using "such as", "like", or "e.g." with multiple alternative tools/skills (e.g. "React, Angular, or Vue.js"), treat the requirement as satisfied if the resume includes ANY ONE of the listed options.
 - Do not list the other alternatives as “missing” unless the job description explicitly requires them ALL.
+- Calculate Shortlisting Chances based on the skill match percentage and job requirements coverage.
 `;
 
       const completion = await groq.chat.completions.create({
