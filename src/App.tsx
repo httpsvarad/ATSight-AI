@@ -587,7 +587,7 @@ ${jobDescription}
                   value={jobDescription}
                   onChange={(e) => setJobDescription(e.target.value)}
                   rows={6}
-                  className="mt-2 p-2 block w-full rounded-xl border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                  className="mt-2 p-2 block resize-none w-full rounded-xl border-[1px] border-gray-300 shadow-sm sm:text-sm"
                   placeholder="Paste the job description here..."
                 />
               </div>
